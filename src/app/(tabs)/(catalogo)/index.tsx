@@ -5,6 +5,7 @@ import { EstadoError } from '@/components/EstadoError';
 import { EstadoVacio } from '@/components/EstadoVacio';
 import { SeparadorLista } from '@/components/SeparadorLista';
 import { TarjetaLibro } from '@/components/TarjetaLibro';
+import { VistosRecientes } from '@/components/VistosRecientes';
 import { colores, espaciado, tipografia } from '@/constants/tema';
 import { useApp } from '@/context/AppContext';
 import { useLibros } from '@/hooks/useLibros';
@@ -16,7 +17,7 @@ function obtenerClave(libro: Libro) {
 
 export default function Catalogo() {
   const { libros, cargando, error, reintentar } = useLibros();
-  const { disponibles } = useApp();
+  const { disponibles, recientes } = useApp();
 
   if (cargando) {
     return <EstadoCargando mensaje="Cargando el catálogo…" />;
@@ -37,6 +38,7 @@ export default function Catalogo() {
           <Text style={styles.subtitulo}>
             {libros.length} {libros.length === 1 ? 'título' : 'títulos'} en el catálogo
           </Text>
+          <VistosRecientes vistos={recientes} />
         </View>
       }
       ListEmptyComponent={<EstadoVacio mensaje="Todavía no hay libros en el catálogo." />}

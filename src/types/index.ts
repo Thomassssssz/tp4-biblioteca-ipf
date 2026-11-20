@@ -16,6 +16,12 @@ export type Prestamo = {
   notificacionId: string | null;
 };
 
+//posicion en la pila: identifica cada visita aunque el mismo libro aparezca dos veces
+export type VistoReciente = {
+  libro: Libro;
+  posicion: number;
+};
+
 export type ReservaEnEspera = {
   isbn: string;
   posicion: number;

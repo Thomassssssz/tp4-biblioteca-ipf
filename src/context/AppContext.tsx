@@ -18,12 +18,30 @@ import {
   reservarLibro,
   tieneReserva,
 } from '../lib/biblioteca';
-import type { Aviso, Libro, Prestamo, ReservaEnEspera, ResultadoReserva, Sesion } from '../types';
+import type {
+  Aviso,
+  Libro,
+  Prestamo,
+  ReservaEnEspera,
+  ResultadoReserva,
+  Sesion,
+  VistoReciente,
+} from '../types';
 
-type AppContextValue = {
+type AccionesEstables = {
+  devolver: (isbn: string) => void;
+  registrarLibroVisto: (isbn: string) => void;
+  guardarNotificacion: (isbn: string, notificacionId: string | null) => void;
+  avisar: (mensaje: string) => void;
+  marcarLeido: (id: string) => void;
+  iniciarSesion: (usuario: string) => void;
+  cerrarSesion: () => void;
+};
+
+type AppContextValue = AccionesEstables & {
   prestamos: Prestamo[];
   reservasEnEspera: ReservaEnEspera[];
-  recientes: Libro[];
+  recientes: VistoReciente[];
   avisos: Aviso[];
   sesion: Sesion | null;
   obtenerLibro: (isbn: string) => Libro | undefined;
@@ -32,14 +50,7 @@ type AppContextValue = {
   posicionEnEspera: (isbn: string) => number | null;
   yaReservado: (isbn: string) => boolean;
   reservar: (isbn: string) => ResultadoReserva;
-  devolver: (isbn: string) => void;
   entregarSiguiente: (isbn: string) => string | undefined;
-  registrarLibroVisto: (isbn: string) => void;
-  guardarNotificacion: (isbn: string, notificacionId: string | null) => void;
-  avisar: (mensaje: string) => void;
-  marcarLeido: (id: string) => void;
-  iniciarSesion: (usuario: string) => void;
-  cerrarSesion: () => void;
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -53,30 +64,11 @@ export function AppProvider({ children }: AppProviderProps) {
   const [estado, setEstado] = useState(crearEstadoInicial);
   const [sesion, setSesion] = useState<Sesion | null>(null);
 
-  const valor = useMemo<AppContextValue>(
+  //solo usan actualizaciones funcionales, asi mantienen la misma referencia entre renders
+  //y se pueden usar como dependencia de un efecto sin volver a dispararlo
+  const acciones = useMemo<AccionesEstables>(
     () => ({
-      prestamos: estado.prestamos,
-      reservasEnEspera: listarReservasEnEspera(estado),
-      recientes: obtenerRecientes(estado, CANTIDAD_RECIENTES),
-      avisos: estado.avisos,
-      sesion,
-      obtenerLibro: buscarLibroPorIsbn,
-      disponibles: (isbn) => calcularDisponibles(estado, isbn),
-      personasEnEspera: (isbn) => obtenerPersonasEnEspera(estado, isbn),
-      posicionEnEspera: (isbn) => obtenerPosicionEnEspera(estado, isbn),
-      yaReservado: (isbn) => tieneReserva(estado, isbn),
-      //el resultado se calcula con el estado visible y el cambio con el estado mas reciente
-      reservar: (isbn) => {
-        const ahora = Date.now();
-        setEstado((anterior) => reservarLibro(anterior, isbn, ahora).estado);
-        return reservarLibro(estado, isbn, ahora).resultado;
-      },
       devolver: (isbn) => setEstado((anterior) => devolverLibro(anterior, isbn)),
-      entregarSiguiente: (isbn) => {
-        const ahora = Date.now();
-        setEstado((anterior) => entregarAlSiguiente(anterior, isbn, ahora).estado);
-        return entregarAlSiguiente(estado, isbn, ahora).persona;
-      },
       registrarLibroVisto: (isbn) => setEstado((anterior) => registrarVisto(anterior, isbn)),
       guardarNotificacion: (isbn, notificacionId) =>
         setEstado((anterior) => asignarNotificacion(anterior, isbn, notificacionId)),
@@ -93,7 +85,35 @@ export function AppProvider({ children }: AppProviderProps) {
       iniciarSesion: (usuario) => setSesion({ usuario }),
       cerrarSesion: () => setSesion(null),
     }),
-    [estado, sesion],
+    [],
+  );
+
+  const valor = useMemo<AppContextValue>(
+    () => ({
+      ...acciones,
+      prestamos: estado.prestamos,
+      reservasEnEspera: listarReservasEnEspera(estado),
+      recientes: obtenerRecientes(estado, CANTIDAD_RECIENTES),
+      avisos: estado.avisos,
+      sesion,
+      obtenerLibro: buscarLibroPorIsbn,
+      disponibles: (isbn) => calcularDisponibles(estado, isbn),
+      personasEnEspera: (isbn) => obtenerPersonasEnEspera(estado, isbn),
+      posicionEnEspera: (isbn) => obtenerPosicionEnEspera(estado, isbn),
+      yaReservado: (isbn) => tieneReserva(estado, isbn),
+      //el resultado se calcula con el estado visible y el cambio con el estado mas reciente
+      reservar: (isbn) => {
+        const ahora = Date.now();
+        setEstado((anterior) => reservarLibro(anterior, isbn, ahora).estado);
+        return reservarLibro(estado, isbn, ahora).resultado;
+      },
+      entregarSiguiente: (isbn) => {
+        const ahora = Date.now();
+        setEstado((anterior) => entregarAlSiguiente(anterior, isbn, ahora).estado);
+        return entregarAlSiguiente(estado, isbn, ahora).persona;
+      },
+    }),
+    [acciones, estado, sesion],
   );
 
   return <AppContext.Provider value={valor}>{children}</AppContext.Provider>;

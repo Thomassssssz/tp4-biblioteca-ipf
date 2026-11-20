@@ -2,7 +2,15 @@ import { DIAS_PRESTAMO, USUARIO_ACTUAL } from '../constants/biblioteca';
 import { ESPERAS_INICIALES, LIBROS } from '../data/libros';
 import { Cola } from '../estructuras/Cola';
 import { Pila } from '../estructuras/Pila';
-import type { Aviso, Libro, OrigenPrestamo, Prestamo, ReservaEnEspera, ResultadoReserva } from '../types';
+import type {
+  Aviso,
+  Libro,
+  OrigenPrestamo,
+  Prestamo,
+  ReservaEnEspera,
+  ResultadoReserva,
+  VistoReciente,
+} from '../types';
 
 //las estructuras guardadas aca nunca se mutan: cada cambio trabaja sobre una copia
 export type EstadoBiblioteca = {
@@ -64,13 +72,16 @@ export function listarReservasEnEspera(estado: EstadoBiblioteca): ReservaEnEsper
   return reservas;
 }
 
-export function obtenerRecientes(estado: EstadoBiblioteca, cantidad: number): Libro[] {
-  return estado.recientes
-    .aArray()
-    .reverse()
-    .slice(0, cantidad)
-    .map(buscarLibroPorIsbn)
-    .filter((libro): libro is Libro => libro !== undefined);
+export function obtenerRecientes(estado: EstadoBiblioteca, cantidad: number): VistoReciente[] {
+  const vistos: VistoReciente[] = [];
+  const isbns = estado.recientes.aArray();
+  for (let posicion = isbns.length - 1; posicion >= 0 && vistos.length < cantidad; posicion--) {
+    const libro = buscarLibroPorIsbn(isbns[posicion]);
+    if (libro) {
+      vistos.push({ libro, posicion });
+    }
+  }
+  return vistos;
 }
 
 function crearPrestamo(isbn: string, origen: OrigenPrestamo, ahora: number): Prestamo {

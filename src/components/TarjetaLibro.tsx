@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Link } from 'expo-router';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colores, espaciado, radios, tipografia } from '../constants/tema';
 import type { Libro } from '../types';
+import { EtiquetaDisponibilidad } from './EtiquetaDisponibilidad';
 
 type TarjetaLibroProps = {
   libro: Libro;
@@ -9,28 +11,24 @@ type TarjetaLibroProps = {
 };
 
 export function TarjetaLibro({ libro, disponibles }: TarjetaLibroProps) {
-  const hayEjemplares = disponibles > 0;
-  const textoDisponibilidad = hayEjemplares
-    ? `${disponibles} ${disponibles === 1 ? 'disponible' : 'disponibles'}`
-    : 'Sin ejemplares';
-
   return (
-    <View style={styles.tarjeta}>
-      <View style={styles.lomo} />
-      <View style={styles.info}>
-        <Text style={styles.titulo} numberOfLines={2}>
-          {libro.titulo}
-        </Text>
-        <Text style={styles.autor} numberOfLines={1}>
-          {libro.autor} · {libro.anio}
-        </Text>
-        <View style={[styles.etiqueta, hayEjemplares ? styles.etiquetaOk : styles.etiquetaAgotado]}>
-          <Text style={[styles.textoEtiqueta, hayEjemplares ? styles.textoOk : styles.textoAgotado]}>
-            {textoDisponibilidad}
+    <Link href={{ pathname: '/libro/[isbn]', params: { isbn: libro.isbn } }} asChild>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${libro.titulo}, de ${libro.autor}. Ver detalle`}
+        style={({ pressed }) => [styles.tarjeta, pressed && styles.presionada]}>
+        <View style={styles.lomo} />
+        <View style={styles.info}>
+          <Text style={styles.titulo} numberOfLines={2}>
+            {libro.titulo}
           </Text>
+          <Text style={styles.autor} numberOfLines={1}>
+            {libro.autor} · {libro.anio}
+          </Text>
+          <EtiquetaDisponibilidad disponibles={disponibles} />
         </View>
-      </View>
-    </View>
+      </Pressable>
+    </Link>
   );
 }
 
@@ -42,6 +40,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colores.borde,
     overflow: 'hidden',
+  },
+  presionada: {
+    opacity: 0.85,
   },
   lomo: {
     width: espaciado.sm,
@@ -60,28 +61,5 @@ const styles = StyleSheet.create({
   autor: {
     fontSize: tipografia.chica,
     color: colores.textoSecundario,
-  },
-  etiqueta: {
-    alignSelf: 'flex-start',
-    marginTop: espaciado.xs,
-    paddingHorizontal: espaciado.sm,
-    paddingVertical: espaciado.xs,
-    borderRadius: radios.chico,
-  },
-  etiquetaOk: {
-    backgroundColor: colores.primarioClaro,
-  },
-  etiquetaAgotado: {
-    backgroundColor: colores.avisoFondo,
-  },
-  textoEtiqueta: {
-    fontSize: tipografia.chica,
-    fontWeight: '600',
-  },
-  textoOk: {
-    color: colores.primario,
-  },
-  textoAgotado: {
-    color: colores.aviso,
   },
 });
