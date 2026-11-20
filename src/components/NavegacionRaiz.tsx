@@ -25,6 +25,8 @@ export function NavegacionRaiz() {
         name="reservar/[isbn]"
         options={{ presentation: 'modal', title: 'Confirmar reserva' }}
       />
+      <Stack.Screen name="reserva" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" options={{ title: 'No encontrada' }} />
       {/*cuando guard pasa a false la ruta deja de existir y sale sola del historial*/}
       <Stack.Protected guard={!sesion}>
         <Stack.Screen name="login" options={{ presentation: 'modal', title: 'Personal' }} />
