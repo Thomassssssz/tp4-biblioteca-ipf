@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colores, espaciado, TAMANIO_TACTIL_MINIMO, tipografia } from '../constants/tema';
 import { useApp } from '../context/AppContext';
@@ -9,20 +9,33 @@ function abrirLogin() {
   router.push('/login');
 }
 
+function abrirMostrador() {
+  router.push('/mostrador');
+}
+
 export function BotonPersonal() {
   const { sesion, cerrarSesion } = useApp();
 
-  //con sesion no se vuelven a pedir credenciales; el acceso al mostrador llega en el proximo bloque
+  //con sesion no se vuelven a pedir credenciales: se entra directo al mostrador
   if (sesion) {
     return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Cerrar la sesión de ${sesion.usuario}`}
-        onPress={cerrarSesion}
-        style={styles.boton}>
-        <Ionicons name="log-out-outline" size={20} color={colores.textoInvertido} />
-        <Text style={styles.texto}>Salir</Text>
-      </Pressable>
+      <View style={styles.fila}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Abrir el mostrador"
+          onPress={abrirMostrador}
+          style={styles.boton}>
+          <Ionicons name="storefront-outline" size={20} color={colores.textoInvertido} />
+          <Text style={styles.texto}>Mostrador</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Cerrar la sesión de ${sesion.usuario}`}
+          onPress={cerrarSesion}
+          style={styles.boton}>
+          <Ionicons name="log-out-outline" size={22} color={colores.textoInvertido} />
+        </Pressable>
+      </View>
     );
   }
 
@@ -39,6 +52,10 @@ export function BotonPersonal() {
 }
 
 const styles = StyleSheet.create({
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   boton: {
     flexDirection: 'row',
     alignItems: 'center',

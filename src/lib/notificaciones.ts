@@ -63,6 +63,23 @@ export function programarRecordatorio(libro: Libro, fechaDevolucion: number): Pr
   });
 }
 
+export async function notificacionesPermitidas(): Promise<boolean> {
+  const respuesta = await getPermissionsAsync();
+  return respuesta.status === 'granted';
+}
+
+//trigger con solo el canal: se muestra en el momento
+export function notificarEntrega(libro: Libro): Promise<string> {
+  return scheduleNotificationAsync({
+    content: {
+      title: 'Biblioteca IPF',
+      body: `¡Te entregaron "${libro.titulo}"! Ya figura en tus préstamos.`,
+      data: { isbn: libro.isbn },
+    },
+    trigger: { channelId: CANAL_PRESTAMOS },
+  });
+}
+
 export function cancelarRecordatorio(notificacionId: string): Promise<void> {
   return cancelScheduledNotificationAsync(notificacionId);
 }

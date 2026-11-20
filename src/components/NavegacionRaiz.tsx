@@ -29,6 +29,9 @@ export function NavegacionRaiz() {
       <Stack.Protected guard={!sesion}>
         <Stack.Screen name="login" options={{ presentation: 'modal', title: 'Personal' }} />
       </Stack.Protected>
+      <Stack.Protected guard={!!sesion}>
+        <Stack.Screen name="mostrador" options={{ title: 'Mostrador' }} />
+      </Stack.Protected>
     </Stack>
   );
 }

@@ -22,6 +22,12 @@ export type VistoReciente = {
   posicion: number;
 };
 
+export type ColaMostrador = {
+  libro: Libro;
+  frente: string;
+  cantidad: number;
+};
+
 export type ReservaEnEspera = {
   isbn: string;
   posicion: number;

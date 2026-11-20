@@ -5,6 +5,7 @@ import { Pila } from '../estructuras/Pila';
 import type {
   AnticipoReserva,
   Aviso,
+  ColaMostrador,
   Libro,
   OrigenPrestamo,
   Prestamo,
@@ -71,6 +72,19 @@ export function listarReservasEnEspera(estado: EstadoBiblioteca): ReservaEnEsper
     }
   }
   return reservas;
+}
+
+//solo lee las colas con verFrente y tamanio: no desencola nada
+export function listarColasConEspera(estado: EstadoBiblioteca): ColaMostrador[] {
+  const colas: ColaMostrador[] = [];
+  for (const libro of LIBROS) {
+    const cola = estado.esperas[libro.isbn];
+    const frente = cola?.verFrente();
+    if (cola && frente !== undefined) {
+      colas.push({ libro, frente, cantidad: cola.tamanio });
+    }
+  }
+  return colas;
 }
 
 export function obtenerRecientes(estado: EstadoBiblioteca, cantidad: number): VistoReciente[] {

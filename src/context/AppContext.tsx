@@ -1,6 +1,15 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
-import { CANTIDAD_RECIENTES } from '../constants/biblioteca';
+import { CANTIDAD_RECIENTES, USUARIO_ACTUAL } from '../constants/biblioteca';
 import {
   agregarAviso,
   anticiparReserva,
@@ -10,6 +19,7 @@ import {
   crearEstadoInicial,
   devolverLibro,
   entregarAlSiguiente,
+  listarColasConEspera,
   listarReservasEnEspera,
   marcarAvisoLeido,
   obtenerPersonasEnEspera,
@@ -19,11 +29,17 @@ import {
   reservarLibro,
   tieneReserva,
 } from '../lib/biblioteca';
-import { cancelarRecordatorio, programarRecordatorio } from '../lib/notificaciones';
+import {
+  cancelarRecordatorio,
+  notificacionesPermitidas,
+  notificarEntrega,
+  programarRecordatorio,
+} from '../lib/notificaciones';
 import { validarCredenciales } from '../lib/sesion';
 import type {
   AnticipoReserva,
   Aviso,
+  ColaMostrador,
   Libro,
   Prestamo,
   ReservaEnEspera,
@@ -47,6 +63,7 @@ type AccionesEstables = {
 type AppContextValue = AccionesEstables & {
   prestamos: Prestamo[];
   reservasEnEspera: ReservaEnEspera[];
+  colasConEspera: ColaMostrador[];
   recientes: VistoReciente[];
   avisos: Aviso[];
   sesion: Sesion | null;
@@ -152,11 +169,33 @@ export function AppProvider({ children }: AppProviderProps) {
     };
   }, []);
 
+  //se consulta el permiso en el momento: pudo cambiar en ajustes desde la ultima vez
+  const avisarEntrega = useCallback(
+    async (isbn: string) => {
+      const libro = buscarLibroPorIsbn(isbn);
+      if (!libro) {
+        return;
+      }
+      const avisoInterno = `Te entregaron "${libro.titulo}" en el mostrador. Ya figura en tus préstamos.`;
+      try {
+        if (await notificacionesPermitidas()) {
+          await notificarEntrega(libro);
+          return;
+        }
+      } catch {
+        //si la notificacion falla se usa el aviso interno
+      }
+      acciones.avisar(avisoInterno);
+    },
+    [acciones],
+  );
+
   const valor = useMemo<AppContextValue>(
     () => ({
       ...acciones,
       prestamos: estado.prestamos,
       reservasEnEspera: listarReservasEnEspera(estado),
+      colasConEspera: listarColasConEspera(estado),
       recientes: obtenerRecientes(estado, CANTIDAD_RECIENTES),
       avisos: estado.avisos,
       sesion,
@@ -175,10 +214,14 @@ export function AppProvider({ children }: AppProviderProps) {
       entregarSiguiente: (isbn) => {
         const ahora = Date.now();
         setEstado((anterior) => entregarAlSiguiente(anterior, isbn, ahora).estado);
-        return entregarAlSiguiente(estado, isbn, ahora).persona;
+        const persona = entregarAlSiguiente(estado, isbn, ahora).persona;
+        if (persona === USUARIO_ACTUAL) {
+          avisarEntrega(isbn);
+        }
+        return persona;
       },
     }),
-    [acciones, estado, sesion],
+    [acciones, avisarEntrega, estado, sesion],
   );
 
   return <AppContext.Provider value={valor}>{children}</AppContext.Provider>;
