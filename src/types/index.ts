@@ -40,6 +40,10 @@ export type Aviso = {
   leido: boolean;
 };
 
+export type RecursoPermiso = 'camara';
+
+export type EstadoPermiso = 'cargando' | 'concedido' | 'preguntable' | 'bloqueado';
+
 export type Sesion = {
   usuario: string;
 };

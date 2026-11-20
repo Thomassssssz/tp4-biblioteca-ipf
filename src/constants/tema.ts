@@ -38,5 +38,10 @@ export const radios = {
   grande: 16,
 } as const;
 
+export const tamanios = {
+  circuloIcono: 80,
+  vistaCamara: 280,
+} as const;
+
 //area tactil minima recomendada por accesibilidad
 export const TAMANIO_TACTIL_MINIMO = 44;

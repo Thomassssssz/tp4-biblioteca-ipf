@@ -43,7 +43,12 @@ export default function Catalogo() {
             <AccesoRapido
               href={{ pathname: '/buscar', params: { q: '' } }}
               icono="search"
-              texto="Buscar por título o autor"
+              texto="Buscar"
+            />
+            <AccesoRapido
+              href={{ pathname: '/permisos/[recurso]', params: { recurso: 'camara' } }}
+              icono="barcode-outline"
+              texto="Escanear libro"
             />
           </View>
           <VistosRecientes vistos={recientes} />

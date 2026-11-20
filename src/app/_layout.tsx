@@ -19,6 +19,11 @@ export default function RootLayout() {
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="buscar" options={{ title: 'Buscar' }} />
+        <Stack.Screen name="escanear" options={{ title: 'Escanear libro' }} />
+        <Stack.Screen
+          name="permisos/[recurso]"
+          options={{ presentation: 'modal', title: 'Permiso' }}
+        />
       </Stack>
     </AppProvider>
   );
