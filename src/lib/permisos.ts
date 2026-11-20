@@ -1,11 +1,11 @@
 import type { EstadoPermiso, RecursoPermiso } from '../types';
 
-type RespuestaPermiso = {
+export type RespuestaPermiso = {
   status: string;
   canAskAgain: boolean;
 };
 
-const RECURSOS: readonly RecursoPermiso[] = ['camara'];
+const RECURSOS: readonly RecursoPermiso[] = ['camara', 'notificaciones'];
 
 export function esRecursoPermiso(valor: string): valor is RecursoPermiso {
   return RECURSOS.some((recurso) => recurso === valor);

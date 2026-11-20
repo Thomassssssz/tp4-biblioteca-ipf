@@ -18,4 +18,11 @@ export const TEXTOS_PERMISO: Record<RecursoPermiso, TextosPermiso> = {
     bloqueado:
       'La cámara está bloqueada para esta app. Podés habilitarla desde Ajustes o escribir el ISBN a mano.',
   },
+  notificaciones: {
+    icono: 'notifications',
+    titulo: 'Recordatorios de devolución',
+    beneficio: 'Usamos las notificaciones para recordarte cuándo devolver tus libros y avisarte cuando te entreguen uno reservado.',
+    bloqueado:
+      'Las notificaciones están bloqueadas para esta app. Podés habilitarlas desde Ajustes; mientras tanto, los avisos aparecen en Mis reservas.',
+  },
 };

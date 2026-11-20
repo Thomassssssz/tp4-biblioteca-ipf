@@ -22,7 +22,7 @@ function irAPermiso() {
 }
 
 export default function Escanear() {
-  const { estado, abrirAjustes } = usePermiso();
+  const { estado, abrirAjustes } = usePermiso('camara');
   const { obtenerLibro } = useApp();
 
   const existeLibro = useCallback((isbn: string) => obtenerLibro(isbn) !== undefined, [obtenerLibro]);

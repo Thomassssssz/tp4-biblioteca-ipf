@@ -47,7 +47,7 @@ export type Aviso = {
   leido: boolean;
 };
 
-export type RecursoPermiso = 'camara';
+export type RecursoPermiso = 'camara' | 'notificaciones';
 
 export type EstadoPermiso = 'cargando' | 'concedido' | 'preguntable' | 'bloqueado';
 
