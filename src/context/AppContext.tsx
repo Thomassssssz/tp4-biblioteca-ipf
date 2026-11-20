@@ -20,12 +20,14 @@ import {
   tieneReserva,
 } from '../lib/biblioteca';
 import { cancelarRecordatorio, programarRecordatorio } from '../lib/notificaciones';
+import { validarCredenciales } from '../lib/sesion';
 import type {
   AnticipoReserva,
   Aviso,
   Libro,
   Prestamo,
   ReservaEnEspera,
+  ResultadoLogin,
   ResultadoReserva,
   Sesion,
   VistoReciente,
@@ -38,7 +40,7 @@ type AccionesEstables = {
   desactivarRecordatorio: (isbn: string) => void;
   avisar: (mensaje: string) => void;
   marcarLeido: (id: string) => void;
-  iniciarSesion: (usuario: string) => void;
+  iniciarSesion: (usuario: string, clave: string) => ResultadoLogin;
   cerrarSesion: () => void;
 };
 
@@ -138,7 +140,14 @@ export function AppProvider({ children }: AppProviderProps) {
       },
       registrarLibroVisto: (isbn) => setEstado((anterior) => registrarVisto(anterior, isbn)),
       marcarLeido: (id) => setEstado((anterior) => marcarAvisoLeido(anterior, id)),
-      iniciarSesion: (usuario) => setSesion({ usuario }),
+      //solo se guarda el usuario: la clave nunca entra al estado
+      iniciarSesion: (usuario, clave) => {
+        const resultado = validarCredenciales(usuario, clave);
+        if (resultado.ok) {
+          setSesion(resultado.sesion);
+        }
+        return resultado;
+      },
       cerrarSesion: () => setSesion(null),
     };
   }, []);

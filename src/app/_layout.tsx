@@ -1,6 +1,4 @@
-import { Stack } from 'expo-router';
-
-import { colores } from '@/constants/tema';
+import { NavegacionRaiz } from '@/components/NavegacionRaiz';
 import { AppProvider } from '@/context/AppContext';
 import { configurarPresentacion } from '@/lib/notificaciones';
 
@@ -15,24 +13,7 @@ configurarPresentacion();
 export default function RootLayout() {
   return (
     <AppProvider>
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: colores.primario },
-          headerTintColor: colores.textoInvertido,
-          contentStyle: { backgroundColor: colores.fondo },
-        }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="buscar" options={{ title: 'Buscar' }} />
-        <Stack.Screen name="escanear" options={{ title: 'Escanear libro' }} />
-        <Stack.Screen
-          name="permisos/[recurso]"
-          options={{ presentation: 'modal', title: 'Permiso' }}
-        />
-        <Stack.Screen
-          name="reservar/[isbn]"
-          options={{ presentation: 'modal', title: 'Confirmar reserva' }}
-        />
-      </Stack>
+      <NavegacionRaiz />
     </AppProvider>
   );
 }

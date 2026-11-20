@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 
+import { BotonPersonal } from '@/components/BotonPersonal';
 import { colores } from '@/constants/tema';
 
 //si se entra por deep link a un detalle, el catalogo queda debajo para poder volver
@@ -15,7 +16,10 @@ export default function CatalogoLayout() {
         headerTintColor: colores.textoInvertido,
         contentStyle: { backgroundColor: colores.fondo },
       }}>
-      <Stack.Screen name="index" options={{ title: 'Catálogo' }} />
+      <Stack.Screen
+        name="index"
+        options={{ title: 'Catálogo', headerRight: () => <BotonPersonal /> }}
+      />
       <Stack.Screen name="libro/[isbn]" options={{ title: 'Detalle del libro' }} />
     </Stack>
   );

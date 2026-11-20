@@ -54,3 +54,7 @@ export type EstadoPermiso = 'cargando' | 'concedido' | 'preguntable' | 'bloquead
 export type Sesion = {
   usuario: string;
 };
+
+export type ResultadoLogin =
+  | { ok: true; sesion: Sesion }
+  | { ok: false; motivo: 'vacios' | 'incorrectas' };
