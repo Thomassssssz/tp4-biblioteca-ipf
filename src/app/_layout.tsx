@@ -18,6 +18,7 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colores.fondo },
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="buscar" options={{ title: 'Buscar' }} />
       </Stack>
     </AppProvider>
   );

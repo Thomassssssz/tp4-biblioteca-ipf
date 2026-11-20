@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { AccesoRapido } from '@/components/AccesoRapido';
 import { EstadoCargando } from '@/components/EstadoCargando';
 import { EstadoError } from '@/components/EstadoError';
 import { EstadoVacio } from '@/components/EstadoVacio';
@@ -38,6 +39,13 @@ export default function Catalogo() {
           <Text style={styles.subtitulo}>
             {libros.length} {libros.length === 1 ? 'título' : 'títulos'} en el catálogo
           </Text>
+          <View style={styles.accesos}>
+            <AccesoRapido
+              href={{ pathname: '/buscar', params: { q: '' } }}
+              icono="search"
+              texto="Buscar por título o autor"
+            />
+          </View>
           <VistosRecientes vistos={recientes} />
         </View>
       }
@@ -60,6 +68,11 @@ const styles = StyleSheet.create({
     fontSize: tipografia.titulo,
     fontWeight: '800',
     color: colores.primario,
+  },
+  accesos: {
+    flexDirection: 'row',
+    gap: espaciado.sm,
+    marginTop: espaciado.lg,
   },
   subtitulo: {
     marginTop: espaciado.xs,
