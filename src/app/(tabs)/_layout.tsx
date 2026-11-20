@@ -25,6 +25,23 @@ export default function TabsLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="reservas"
+        options={{
+          title: 'Mis reservas',
+          headerShown: true,
+          headerStyle: { backgroundColor: colores.primario },
+          headerTintColor: colores.textoInvertido,
+          sceneStyle: { backgroundColor: colores.fondo },
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons
+              name={focused ? 'bookmarks' : 'bookmarks-outline'}
+              color={focused ? colores.primario : colores.textoSecundario}
+              size={size}
+            />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

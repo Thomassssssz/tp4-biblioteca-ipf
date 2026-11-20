@@ -3,6 +3,7 @@ import { ESPERAS_INICIALES, LIBROS } from '../data/libros';
 import { Cola } from '../estructuras/Cola';
 import { Pila } from '../estructuras/Pila';
 import type {
+  AnticipoReserva,
   Aviso,
   Libro,
   OrigenPrestamo,
@@ -93,18 +94,29 @@ function crearPrestamo(isbn: string, origen: OrigenPrestamo, ahora: number): Pre
   };
 }
 
+export function anticiparReserva(estado: EstadoBiblioteca, isbn: string): AnticipoReserva {
+  if (!buscarLibroPorIsbn(isbn)) {
+    return { tipo: 'inexistente' };
+  }
+  if (tieneReserva(estado, isbn)) {
+    return { tipo: 'duplicada' };
+  }
+  if (calcularDisponibles(estado, isbn) > 0) {
+    return { tipo: 'prestamo' };
+  }
+  return { tipo: 'espera', posicion: obtenerPersonasEnEspera(estado, isbn).length + 1 };
+}
+
 export function reservarLibro(
   estado: EstadoBiblioteca,
   isbn: string,
   ahora: number,
 ): { estado: EstadoBiblioteca; resultado: ResultadoReserva } {
-  if (!buscarLibroPorIsbn(isbn)) {
-    return { estado, resultado: { tipo: 'inexistente' } };
+  const anticipo = anticiparReserva(estado, isbn);
+  if (anticipo.tipo === 'inexistente' || anticipo.tipo === 'duplicada') {
+    return { estado, resultado: anticipo };
   }
-  if (tieneReserva(estado, isbn)) {
-    return { estado, resultado: { tipo: 'duplicada' } };
-  }
-  if (calcularDisponibles(estado, isbn) > 0) {
+  if (anticipo.tipo === 'prestamo') {
     const prestamo = crearPrestamo(isbn, 'estante', ahora);
     return {
       estado: { ...estado, prestamos: [...estado.prestamos, prestamo] },

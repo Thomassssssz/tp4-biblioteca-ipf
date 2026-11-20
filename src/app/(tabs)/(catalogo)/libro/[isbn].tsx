@@ -1,11 +1,11 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, Text } from 'react-native';
 
 import { Boton } from '@/components/Boton';
 import { FichaLibro } from '@/components/FichaLibro';
 import { MensajePantalla } from '@/components/MensajePantalla';
-import { espaciado } from '@/constants/tema';
+import { colores, espaciado, tipografia } from '@/constants/tema';
 import { useApp } from '@/context/AppContext';
 import { esIsbnValido } from '@/lib/isbn';
 import { valorParametro } from '@/lib/parametros';
@@ -16,10 +16,14 @@ function volverAlCatalogo() {
   router.dismissTo('/');
 }
 
+function irAMisReservas() {
+  router.navigate('/reservas');
+}
+
 export default function DetalleLibro() {
   const { isbn: parametro } = useLocalSearchParams<{ isbn: string }>();
   const isbn = valorParametro(parametro);
-  const { obtenerLibro, disponibles, personasEnEspera, registrarLibroVisto } = useApp();
+  const { obtenerLibro, disponibles, personasEnEspera, registrarLibroVisto, yaReservado } = useApp();
 
   const formatoValido = esIsbnValido(isbn);
   const libro = formatoValido ? obtenerLibro(isbn) : undefined;
@@ -66,6 +70,19 @@ export default function DetalleLibro() {
         disponibles={disponibles(libro.isbn)}
         enEspera={personasEnEspera(libro.isbn).length}
       />
+      {yaReservado(libro.isbn) ? (
+        <>
+          <Text style={styles.reservado}>Ya tenés este libro en Mis reservas.</Text>
+          <Boton titulo="Ver mis reservas" onPress={irAMisReservas} variante="secundario" />
+        </>
+      ) : (
+        <Boton
+          titulo="Reservar"
+          onPress={() =>
+            router.push({ pathname: '/reservar/[isbn]', params: { isbn: libro.isbn } })
+          }
+        />
+      )}
     </ScrollView>
   );
 }
@@ -73,5 +90,11 @@ export default function DetalleLibro() {
 const styles = StyleSheet.create({
   contenido: {
     padding: espaciado.lg,
+    gap: espaciado.lg,
+  },
+  reservado: {
+    fontSize: tipografia.normal,
+    color: colores.exito,
+    textAlign: 'center',
   },
 });

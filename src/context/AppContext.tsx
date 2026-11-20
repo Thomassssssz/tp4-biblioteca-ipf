@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 import { CANTIDAD_RECIENTES } from '../constants/biblioteca';
 import {
   agregarAviso,
+  anticiparReserva,
   asignarNotificacion,
   buscarLibroPorIsbn,
   calcularDisponibles,
@@ -19,6 +20,7 @@ import {
   tieneReserva,
 } from '../lib/biblioteca';
 import type {
+  AnticipoReserva,
   Aviso,
   Libro,
   Prestamo,
@@ -49,6 +51,7 @@ type AppContextValue = AccionesEstables & {
   personasEnEspera: (isbn: string) => string[];
   posicionEnEspera: (isbn: string) => number | null;
   yaReservado: (isbn: string) => boolean;
+  anticipar: (isbn: string) => AnticipoReserva;
   reservar: (isbn: string) => ResultadoReserva;
   entregarSiguiente: (isbn: string) => string | undefined;
 };
@@ -101,6 +104,7 @@ export function AppProvider({ children }: AppProviderProps) {
       personasEnEspera: (isbn) => obtenerPersonasEnEspera(estado, isbn),
       posicionEnEspera: (isbn) => obtenerPosicionEnEspera(estado, isbn),
       yaReservado: (isbn) => tieneReserva(estado, isbn),
+      anticipar: (isbn) => anticiparReserva(estado, isbn),
       //el resultado se calcula con el estado visible y el cambio con el estado mas reciente
       reservar: (isbn) => {
         const ahora = Date.now();

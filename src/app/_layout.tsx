@@ -24,6 +24,10 @@ export default function RootLayout() {
           name="permisos/[recurso]"
           options={{ presentation: 'modal', title: 'Permiso' }}
         />
+        <Stack.Screen
+          name="reservar/[isbn]"
+          options={{ presentation: 'modal', title: 'Confirmar reserva' }}
+        />
       </Stack>
     </AppProvider>
   );

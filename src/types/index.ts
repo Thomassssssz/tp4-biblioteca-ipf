@@ -27,6 +27,13 @@ export type ReservaEnEspera = {
   posicion: number;
 };
 
+//lo que pasaria al confirmar, sin modificar el estado
+export type AnticipoReserva =
+  | { tipo: 'prestamo' }
+  | { tipo: 'espera'; posicion: number }
+  | { tipo: 'duplicada' }
+  | { tipo: 'inexistente' };
+
 export type ResultadoReserva =
   | { tipo: 'prestamo'; fechaDevolucion: number }
   | { tipo: 'espera'; posicion: number }
